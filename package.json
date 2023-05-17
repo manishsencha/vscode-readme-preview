@@ -50,5 +50,14 @@
   },
   "dependencies": {
     "@wcj/markdown-to-html": "^2.2.1"
-  }
+  },
+  "repository": {
+    "url": "https://github.com/manishsencha/vscode-readme-preview"
+  },
+  "author": {
+    "email": "manishsencha2001@gmail.com",
+    "name": "Manish Sencha",
+    "url": "https://github.com/manishsencha"
+  },
+  "publisher": "manishsencha"
 }
