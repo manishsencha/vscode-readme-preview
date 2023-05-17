@@ -1,7 +1,7 @@
 {
   "name": "readme-preview",
   "displayName": "readme-preview",
-  "description": "Shows preview of readme file",
+  "description": "Shows preview of readme file in VS Code",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.78.0"
