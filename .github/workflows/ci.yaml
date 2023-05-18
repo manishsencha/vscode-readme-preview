@@ -1,3 +1,5 @@
+
+name: "VS Code Readme Preview - Build and Publish"
 on:
     push:
         branches:
@@ -64,5 +66,5 @@ jobs:
             - name: upload vsix as artifact
               uses: actions/upload-artifact@v1
               with:
-                name: readme-preview-${{steps.gitversion.outputs.semVer}}.vsix
-                path: ${{github.workspace}}/readme-preview-${{steps.gitversion.outputs.semVer}}.vsix
+                name: vscode-readme-preview-${{steps.gitversion.outputs.semVer}}.vsix
+                path: ${{github.workspace}}/vscode-readme-preview-${{steps.gitversion.outputs.semVer}}.vsix
