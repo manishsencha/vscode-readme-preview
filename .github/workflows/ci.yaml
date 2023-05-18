@@ -13,7 +13,7 @@ jobs:
             
             - name: fetch all history and tags from all branches for gitversion
               run: git fetch --prune --unshallow
-              
+
             - name: Install GitVersion
               uses: gittools/actions/gitversion/setup@v0
               with:
@@ -64,5 +64,5 @@ jobs:
             - name: upload vsix as artifact
               uses: actions/upload-artifact@v1
               with:
-                name: vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix
-                path: ${{github.workspace}}/vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix
+                name: readme-preview-${{steps.gitversion.outputs.semVer}}.vsix
+                path: ${{github.workspace}}/readme-preview-${{steps.gitversion.outputs.semVer}}.vsix
