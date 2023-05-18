@@ -11,14 +11,15 @@ jobs:
             - name : Checkout 
               uses : actions/checkout@v3
             
-            - name: install gitversion tool
-              uses: gittools/actions/gitversion/setup@v0.9
+            - name: Install GitVersion
+              uses: gittools/actions/gitversion/setup@v0
               with:
-                  versionSpec: '5.1.x'
+                versionSpec: '5.x'
+             
             
             - name: execute gitversion
               id: gitversion # step id used as reference for output values
-              uses: gittools/actions/gitversion/execute@v0.9
+              uses: gittools/actions/gitversion/execute@v0
               
             - name: print gitversion
               run: |
