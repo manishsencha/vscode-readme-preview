@@ -3,7 +3,7 @@
 import * as vscode from 'vscode';
 import markdown, { getCodeString } from '@wcj/markdown-to-html';
 import * as fs from 'fs';
-
+import * as path from 'path';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -12,46 +12,32 @@ export function activate(context: vscode.ExtensionContext) {
 	// console.log('Congratulations, your extension "readme-preview" is now active!');
 
 	let disposable = vscode.commands.registerCommand('readme-preview.showPreview', () => {
-		var view: vscode.WebviewPanel;
-		console.log(vscode);
-		console.log(vscode.window);
-		vscode.window.onDidChangeActiveTextEditor((event) => {
-			console.log(event);
-			if (event) {
-				console.log(event);
-				let filePath: string = event.document.fileName;
-				let isReadme = filePath && filePath.toLocaleLowerCase().endsWith("md");
-				let data: string = '';
-				let interval;
-				let parsedData: string = '';
-				console.log(filePath);
-				if (isReadme) {
-					console.log("ISREADME : ", isReadme);
-					console.log(view);
-					if (!view) {
-						view = vscode.window.createWebviewPanel('readmePreview', 'Preview', vscode.ViewColumn.Two, {});
+		var view: vscode.WebviewPanel | undefined = undefined;
+
+		let filePath = vscode.window.activeTextEditor?.document.fileName;
+		let interval: any;
+		if (filePath && filePath.toLocaleLowerCase().endsWith(".md")) {
+			if (!view) {
+				view = vscode.window.createWebviewPanel('readmePreview', 'Preview', vscode.ViewColumn.Two, {});
+			}
+			interval = setInterval(() => {
+				if (filePath && filePath.toLocaleLowerCase().endsWith(".md")) {
+					let data = fs.readFileSync(filePath).toString();
+					console.log("DATA : ", data);
+					let parsedData = markdown(data).toString();
+					if (view) {
+						console.log("VIEW : ", view);
+						view.webview.html = parsedData;
 					}
-					interval = setInterval(() => {
-						data = fs.readFileSync(filePath).toString();
-						parsedData = markdown(data).toString();
-						if (view) {
-							view.webview.html = parsedData;
-						}
-					}, 2000);
 				}
 				else {
-					console.log("here");
-					if (view) {
-						view.dispose();
-						console.log("DISPOSED!!");
-					}
-					if (interval) {
-						clearInterval(interval);
-					}
+					clearInterval(interval);
 				}
-			}
+			}, 2000);
+		}
+		view?.onDidDispose(e => {
+			clearInterval(interval);
 		});
-
 	});
 
 	context.subscriptions.push(disposable);
