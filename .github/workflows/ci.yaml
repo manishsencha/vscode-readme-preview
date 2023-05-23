@@ -1,70 +1,24 @@
-
-name: "VS Code Readme Preview - Build and Publish"
 on:
-    push:
-        branches:
-            - main
+  push:
+    tags:
+      - "*"
 
+name: Deploy Extension
 jobs:
-    publish:
-        name : Release and Publish
-        runs-on : ubuntu-latest
-        steps : 
-            - name : Checkout 
-              uses : actions/checkout@v3
-            
-            - name: fetch all history and tags from all branches for gitversion
-              run: git fetch --prune --unshallow
-
-            - name: Install GitVersion
-              uses: gittools/actions/gitversion/setup@v0
-              with:
-                versionSpec: '5.x'
-             
-            
-            - name: execute gitversion
-              id: gitversion # step id used as reference for output values
-              uses: gittools/actions/gitversion/execute@v0
-              
-            - name: print gitversion
-              run: |
-                echo "Major: ${{ steps.gitversion.outputs.major }}"
-                echo "Minor: ${{ steps.gitversion.outputs.minor }}"
-                echo "Patch: ${{ steps.gitversion.outputs.patch }}"
-                echo "MajorMinorPatch: ${{ steps.gitversion.outputs.majorMinorPatch }}"
-                echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
-            - name : Setup Node.js
-              uses : actions/setup-node@v1
-            
-              with :
-                node-version: 18
-            
-            - name : Install dependencies
-              run : yarn install
-            
-            - name : update metadata in package.json
-              uses : onlyutkarsh/patch-files-action@v1.0.1
-              with :
-                files : '${{github.workspace}}/package.json'
-                patch-syntax : |
-                  = /version => "${{ steps.gitversion.outputs.semVer }}"
-                 
-            - name: add version in CHANGELOG.md
-              uses: cschleiden/replace-tokens@v1.0
-              with:
-                files: '${{github.workspace}}/CHANGELOG.md'
-              env:
-                VERSION: "${{ steps.gitversion.outputs.semVer }}"
-      
-            - name: compile and create vsix
-              run: npm run package
-      
-            - name: print vsix path
-              run: |
-                echo "VSIX Path: ${{ env.vsix_path }}"
-      
-            - name: upload vsix as artifact
-              uses: actions/upload-artifact@v1
-              with:
-                name: vscode-readme-preview-${{steps.gitversion.outputs.semVer}}.vsix
-                path: ${{github.workspace}}/vscode-readme-preview-${{steps.gitversion.outputs.semVer}}.vsix
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - run: yarn install 
+      - name: Publish to Open VSX Registry
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          pat: ${{ secrets.OPEN_VSX_TOKEN }}
+      - name: Publish to Visual Studio Marketplace
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+          registryUrl: https://marketplace.visualstudio.com
